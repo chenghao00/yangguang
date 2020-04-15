@@ -22,7 +22,8 @@ class YgSpider(scrapy.Spider):
         #实现翻页
         next_url='http://wz.sun0769.com'+response.css('.prov_rota::attr(href)').extract_first()
         print('下一页:'+next_url)
-        yield scrapy.Request(url=next_url,callback=self.parse)
+        if next_url is not None:
+            yield scrapy.Request(url=next_url,callback=self.parse)
 
 
     def parse_detail(self, response):
@@ -30,5 +31,5 @@ class YgSpider(scrapy.Spider):
         item["content"] = response.css('.details-box pre::text').extract_first()
         item['img'] = response.css('.Picture-img img::attr(src)').extract()
         item['img'] = [i for i in item['img']]
-        print(item)
+        #print(item)
         yield item
