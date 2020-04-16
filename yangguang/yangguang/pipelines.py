@@ -7,6 +7,8 @@
 from scrapy.exceptions import DropItem
 import pymongo
 import re
+
+
 class YangguangPipeline(object):
     # 从配置信息中拿到mongo的信息并赋值
     def __init__(self, mongo_url, mongo_db):
@@ -23,6 +25,7 @@ class YangguangPipeline(object):
 
     # mongodb初始化对象声明
     def open_spider(self, spider):
+        # spider.hello='world'
         self.client = pymongo.MongoClient(self.mongo_url)
         self.db = self.client[self.mongo_db]
 
@@ -32,7 +35,7 @@ class YangguangPipeline(object):
         item["content"] = self.process_content(item["content"])
         print(item)
 
-        self.db[name].insert(dict(item))
+        # self.db[name].insert(dict(item))
         return item
 
     # 使mongodb链接信息关闭，释放内存
@@ -41,5 +44,11 @@ class YangguangPipeline(object):
 
     def process_content(self, content):
         content = re.sub(r"\u3000|\r\n", "", content)
-        #content = [i for i in content if len(i) > 0]  # 去除列表中的空字符串
+        # content = [i for i in content if len(i) > 0]  # 去除列表中的空字符串
         return content
+
+
+
+
+
+

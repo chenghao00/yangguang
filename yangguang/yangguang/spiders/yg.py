@@ -9,6 +9,8 @@ class YgSpider(scrapy.Spider):
     start_urls = ['http://wz.sun0769.com/political/index/politicsNewest?id=1&page=1']
 
     def parse(self, response):
+        # 由pinelines.py中的open_spider还是在爬虫创建执行赋值的属性 可以调用
+        # print(self.hello,'*'*100)
         li_list = response.css('body > div.public-content > div.width-12 > ul.title-state-ul > li')
         for li in li_list:
             item = YangguangItem()
@@ -19,17 +21,16 @@ class YgSpider(scrapy.Spider):
             # 解析出对应的连接跳转 并用callback函数进行处理，并用meta传递参数
             yield scrapy.Request(url=item["href"], callback=self.parse_detail, meta={"item": item})
 
-        #实现翻页
-        next_url='http://wz.sun0769.com'+response.css('.prov_rota::attr(href)').extract_first()
-        print('下一页:'+next_url)
+        # 实现翻页
+        next_url = 'http://wz.sun0769.com' + response.css('.prov_rota::attr(href)').extract_first()
+        print('下一页:' + next_url)
         if next_url is not None:
-            yield scrapy.Request(url=next_url,callback=self.parse)
-
+            yield scrapy.Request(url=next_url, callback=self.parse)
 
     def parse_detail(self, response):
         item = response.meta['item']
         item["content"] = response.css('.details-box pre::text').extract_first()
         item['img'] = response.css('.Picture-img img::attr(src)').extract()
         item['img'] = [i for i in item['img']]
-        #print(item)
+        # print(item)
         yield item
